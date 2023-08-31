@@ -1,3 +1,9 @@
+/*
+ * @author Piotr Esden-Tempski 
+ * code based on stopwatch workshop for icebreaker fpga
+ * by 1BitSquared
+ */
+
 // Cause yosys to throw an error when we implicitly declare nets
 `default_nettype none
 
