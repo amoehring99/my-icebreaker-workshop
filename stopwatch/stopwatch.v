@@ -46,8 +46,10 @@ module top (
 			clkdiv_pulse <= 0;
 		end
 
-		// Timer counter
-		if (clkdiv_pulse) begin
+		// Reset counter if BTN_N pressed, Timer counter else
+		if (!BTN_N) begin
+			display_value = 0;
+		end else if (clkdiv_pulse) begin
 			display_value <= display_value_inc;
 		end
 
