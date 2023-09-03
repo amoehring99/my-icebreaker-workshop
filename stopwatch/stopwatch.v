@@ -69,6 +69,7 @@ module top (
 		// Start clock
 		if (BTN3) begin
 			running <= 1;
+			lap_timeout <= 0;
 		end
 
 		// Stop clock
