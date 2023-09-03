@@ -53,7 +53,14 @@ module top (
 
 	end
 
-	assign display_value_inc = display_value + 8'b1;
+	//hexadecimal display values
+	//assign display_value_inc = display_value + 8'b1;
+
+	//switch to decimal display values
+	bcd8_increment bcd8_increment (
+		.din(display_value),
+		.dout(display_value_inc)
+	);
 
 	// 7 segment display control Pmod 1A
 	seven_seg_ctrl seven_segment_ctrl (
