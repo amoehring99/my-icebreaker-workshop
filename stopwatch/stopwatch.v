@@ -28,6 +28,10 @@ module top (
 	reg [20:0] clkdiv = 0;
 	reg clkdiv_pulse = 0;
 
+	// Display lap time
+	reg [7:0] lap_value = 0;
+	reg [4:0] lap_timeout = 0;
+
 	// Indicates if clock is running
 	reg running = 0;
 
@@ -49,6 +53,11 @@ module top (
 			clkdiv_pulse <= 0;
 		end
 
+		// Count down lap timeout
+		if (clkdiv_pulse && lap_timeout) begin
+			lap_timeout <= lap_timeout - 1;
+		end
+
 		// Reset counter if BTN_N pressed, Timer counter otherwise
 		if (!BTN_N) begin
 			display_value <= 0;
@@ -67,6 +76,12 @@ module top (
 			running <= 0;
 		end
 
+		// Start lap timer
+		if (BTN2) begin
+			lap_timeout <= 20;
+			lap_value <= display_value;
+		end
+
 	end
 
 	//Hexadecimal display values
@@ -81,7 +96,7 @@ module top (
 	// 7 segment display control Pmod 1A
 	seven_seg_ctrl seven_segment_ctrl (
 		.CLK(CLK),
-		.din(display_value[7:0]),
+		.din(lap_timeout ? lap_value[7:0] : display_value[7:0]),
 		.dout(seven_segment)
 	);
 
