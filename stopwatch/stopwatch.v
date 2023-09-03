@@ -28,6 +28,9 @@ module top (
 	reg [20:0] clkdiv = 0;
 	reg clkdiv_pulse = 0;
 
+	// Indicates if clock is running
+	reg running = 0;
+
 	// Combinatorial logic
 	assign LED1 = BTN1 && BTN2;
 	assign LED2 = BTN1 && BTN3;
@@ -46,19 +49,30 @@ module top (
 			clkdiv_pulse <= 0;
 		end
 
-		// Reset counter if BTN_N pressed, Timer counter else
+		// Reset counter if BTN_N pressed, Timer counter otherwise
 		if (!BTN_N) begin
-			display_value = 0;
-		end else if (clkdiv_pulse) begin
+			display_value <= 0;
+			running <= 0;
+		end else if (clkdiv_pulse && running) begin
 			display_value <= display_value_inc;
+		end
+
+		// Start clock
+		if (BTN3) begin
+			running <= 1;
+		end
+
+		// Stop clock
+		if (BTN1) begin
+			running <= 0;
 		end
 
 	end
 
-	//hexadecimal display values
+	//Hexadecimal display values
 	//assign display_value_inc = display_value + 8'b1;
 
-	//switch to decimal display values
+	//Switch to decimal display values
 	bcd8_increment bcd8_increment (
 		.din(display_value),
 		.dout(display_value_inc)
