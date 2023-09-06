@@ -1,3 +1,12 @@
+/*
+ * code based on stopwatch workshop for icebreaker fpga
+ * @author Piotr Esden-Tempski  
+ * by 1BitSquared
+ *
+ * edited by
+ * @amoehring99
+ */
+
 // Cause yosys to throw an error when we implicitly declare nets
 `default_nettype none
 
@@ -22,12 +31,19 @@ module top (
 	reg [20:0] clkdiv = 0;
 	reg clkdiv_pulse = 0;
 
+	// Display lap time
+	reg [7:0] lap_value = 0;
+	reg [4:0] lap_timeout = 0;
+
+	// Indicates if clock is running
+	reg running = 0;
+
 	// Combinatorial logic
-	assign LED1 = !BTN_N;                            // Not operator example
-	assign LED2 = BTN1 || BTN2;                      // Or operator example
-	assign LED3 = BTN2 ^ BTN3;                       // Xor operator example
-	assign LED4 = BTN3 && !BTN_N;                    // And operator example
-	assign LED5 = (BTN1 + BTN2 + BTN3 + 2'b00) >> 1; // Addition and shift example
+	assign LED1 = BTN1 && BTN2;
+	assign LED2 = BTN1 && BTN3;
+	assign LED3 = BTN2 && BTN3;
+	assign LED4 = !BTN_N;
+	assign LED5 = BTN1 || BTN2 || BTN3 || !BTN_N;
 
 	// Synchronous logic
 	always @(posedge CLK) begin
@@ -40,19 +56,51 @@ module top (
 			clkdiv_pulse <= 0;
 		end
 
-		// Timer counter
-		if (clkdiv_pulse) begin
+		// Count down lap timeout
+		if (clkdiv_pulse && lap_timeout) begin
+			lap_timeout <= lap_timeout - 1;
+		end
+
+		// Reset counter if BTN_N pressed, Timer counter otherwise
+		if (!BTN_N) begin
+			display_value <= 0;
+			running <= 0;
+		end else if (clkdiv_pulse && running) begin
 			display_value <= display_value_inc;
+		end
+
+		// Start clock
+		if (BTN3) begin
+			running <= 1;
+			lap_timeout <= 0;
+		end
+
+		// Stop clock
+		if (BTN1) begin
+			running <= 0;
+		end
+
+		// Start lap timer
+		if (BTN2) begin
+			lap_timeout <= 20;
+			lap_value <= display_value;
 		end
 
 	end
 
-	assign display_value_inc = display_value + 8'b1;
+	//Hexadecimal display values
+	//assign display_value_inc = display_value + 8'b1;
+
+	//Switch to decimal display values
+	bcd8_increment bcd8_increment (
+		.din(display_value),
+		.dout(display_value_inc)
+	);
 
 	// 7 segment display control Pmod 1A
 	seven_seg_ctrl seven_segment_ctrl (
 		.CLK(CLK),
-		.din(display_value[7:0]),
+		.din(lap_timeout ? lap_value[7:0] : display_value[7:0]),
 		.dout(seven_segment)
 	);
 
@@ -108,10 +156,10 @@ module seven_seg_ctrl (
 
 		if (clkdiv_pulse) begin
 			if (msb_not_lsb) begin
-				dout[6:0] <= ~msb_digit;
+				dout[6:0] <= msb_digit;
 				dout[7] <= 0;
 			end else begin
-				dout[6:0] <= ~lsb_digit;
+				dout[6:0] <= lsb_digit;
 				dout[7] <= 1;
 			end
 		end
@@ -128,12 +176,12 @@ module seven_seg_hex (
 			4'h0: dout = 7'b 0111111;
 			4'h1: dout = 7'b 0000110;
 			4'h2: dout = 7'b 1011011;
-			// 4'h3: dout = FIXME;
+			4'h3: dout = 7'b 1001111;
 			4'h4: dout = 7'b 1100110;
 			4'h5: dout = 7'b 1101101;
 			4'h6: dout = 7'b 1111101;
 			4'h7: dout = 7'b 0000111;
-			// 4'h8: dout = FIXME;
+			4'h8: dout = 7'b 1111111;
 			4'h9: dout = 7'b 1101111;
 			4'hA: dout = 7'b 1110111;
 			4'hB: dout = 7'b 1111100;
