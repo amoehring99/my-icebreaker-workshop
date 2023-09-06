@@ -4,22 +4,21 @@ Welcome to the iCEBreaker FPGA workshop repository.
 
 This workshop is self directed and can be done on your own time.
 
-
 ## iCEBreaker workshop sessions
 
-* [Crowd Supply Teardown conference](https://www.crowdsupply.com/teardown/portland-2019) in Portland Oregon 21st-23rd June 2019. 
-* [Chaos Communication Congress 36C3](https://events.ccc.de/congress/2019/wiki/index.php/Session:ICEBreaker_FPGA_Workshop)
-in Leipzig Germany 27th-30th December 2019.
+- [Crowd Supply Teardown conference](https://www.crowdsupply.com/teardown/portland-2019) in Portland Oregon 21st-23rd June 2019.
+- [Chaos Communication Congress 36C3](https://events.ccc.de/congress/2019/wiki/index.php/Session:ICEBreaker_FPGA_Workshop)
+  in Leipzig Germany 27th-30th December 2019.
 
 The most up to date version of the workshop can be found on in the stopwatch subdirectory of [this repository](https://github.com/icebreaker-fpga/icebreaker-workshop/tree/master/stopwatch).
 
 ## Supplies needed
 
-* Computer
-* Micro USB cable (make sure it is a data cable not just a charge cable)
-* [iCEBreaker](https://1bitsquared.com/products/icebreaker)
-* [iCEBreaker 7Segment display](https://1bitsquared.com/products/pmod-7-segment-display)
-  * You might need one or two displays depending on the workshop you choose.
+- Computer
+- Micro USB cable (make sure it is a data cable not just a charge cable)
+- [iCEBreaker](https://1bitsquared.com/products/icebreaker)
+- [iCEBreaker 7Segment display](https://1bitsquared.com/products/pmod-7-segment-display)
+  - You might need one or two displays depending on the workshop you choose.
 
 **Note:** In most cases we provide the iCEBreaker hardware for the duration of the
 workshop. You will have to return it after the workshop is over. Make sure to
@@ -60,17 +59,19 @@ server](https://1bitsquared.com/pages/chat)!
 
 **Linux**
 
-* Check if the device is being detected by the kernel with 'lsusb' it will
+- Check if the device is being detected by the kernel with 'lsusb' it will
   either show up as a Future Electronics device or the name of the programmer
   vendor.
-* If the device is being detected by the kernel you might not have permissions
+- If the device is being detected by the kernel you might not have permissions
   to access the device. If you run `sudo iceprog ...` and the device is
   decected you can give yourself permissions by creating a udev file at:
   `/etc/udev/rules.d/53-icebreaker-ftdi.rules` and adding the following line in
   that file:
+
 ```
 ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="plugdev", TAG+="uaccess"
 ```
+
 After adding that file you need to at least replug the programmer or even
 reload the udev rules.
 
